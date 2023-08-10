@@ -23,12 +23,22 @@ pipeline {
                 sh 'cd CurrencyExchange && mvn clean package'
             }
         }
-        stage{
+        stage('Static Code Analysis'){
             steps{
                withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
                     sh 'cd spring-boot-app && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
                 }
             }   
+        }
+        stage('Quality Gate') {
+            steps {
+                script {
+                    def qg = waitForQualityGate abortPipeline: false, credentialsId: 'sonarqube'
+                    if (qg.status != 'OK') {
+                        error "Quality Gate did not pass"
+                    }
+                }
+            }
         }
         stage('Build and Push Docker Image') {
             steps {
