@@ -3,7 +3,7 @@ pipeline {
         registry = "sanjaydas9027/currency-exchange"
         registryCredential = 'DOCKER_CRED'
         DOCKER_IMAGE = "${registry}:${BUILD_NUMBER}"
-        SONAR_URL = "http://3.111.171.106:9000/"
+        SONAR_URL = "http://3.111.197.24:9000/"
     }
     
     agent {
@@ -22,6 +22,13 @@ pipeline {
                 // Replace this with your actual Maven build steps
                 sh 'cd CurrencyExchange && mvn clean package'
             }
+        }
+        stage{
+            steps{
+               withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+                    sh 'cd spring-boot-app && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
+                }
+            }   
         }
         stage('Build and Push Docker Image') {
             steps {
