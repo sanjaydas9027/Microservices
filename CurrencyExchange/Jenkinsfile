@@ -23,6 +23,14 @@ pipeline {
                 sh 'cd CurrencyExchange && mvn clean package'
             }
         }
+        stage('Static Code Analysis'){
+            steps{
+            
+                withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+                   sh 'cd CurrencyExchange && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
+                }
+            }   
+            }
 
         stage('Build and Push Docker Image') {
             steps {
@@ -47,8 +55,6 @@ pipeline {
         always {
             script {
                 sh 'docker logout'
-                def workspaceDir = "${JENKINS_HOME}/workspace/${JOB_NAME}"
-                sh "rm -rf ${workspaceDir}"
             }
         }
     }
