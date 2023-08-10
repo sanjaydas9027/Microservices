@@ -14,6 +14,23 @@ pipeline {
     }
 
     stages {
+            stage('Static Code Analysis'){
+            steps{
+               withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+                    sh 'cd CurrencyExchange && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
+                }
+            }   
+            }
+            stage('Quality Gate') {
+            steps {
+                script {
+                    def qg = waitForQualityGate abortPipeline: false, credentialsId: 'sonarqube'
+                    if (qg.status != 'OK') {
+                        error "Quality Gate did not pass"
+                    }
+                }
+            }
+            }
         stage('Build') {
             steps {
                 // List files in the workspace
@@ -29,23 +46,8 @@ pipeline {
                 sh 'ls -la'
             }
         }
-        stage('Static Code Analysis'){
-            steps{
-               withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
-                    sh 'mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
-                }
-            }   
-        }
-        stage('Quality Gate') {
-            steps {
-                script {
-                    def qg = waitForQualityGate abortPipeline: false, credentialsId: 'sonarqube'
-                    if (qg.status != 'OK') {
-                        error "Quality Gate did not pass"
-                    }
-                }
-            }
-        }
+
+
         stage('Build and Push Docker Image') {
             steps {
                 script {
@@ -69,7 +71,7 @@ pipeline {
         always {
             script {
                 sh 'docker logout'
-                def workspaceDir = "${JENKINS_HOME}/workspace/${JOB_NAME}/${BUILD_NUMBER}"
+                def workspaceDir = "${JENKINS_HOME}/workspace/${JOB_NAME}"
                 sh "rm -rf ${workspaceDir}"
             }
         }
