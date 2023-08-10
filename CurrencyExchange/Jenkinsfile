@@ -26,7 +26,7 @@ pipeline {
         stage('Static Code Analysis'){
             steps{
                withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
-                    sh 'cd spring-boot-app && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
+                    sh 'CurrencyExchange && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
                 }
             }   
         }
@@ -62,10 +62,13 @@ pipeline {
     post {
         always {
             script {
-                sh 'sudo rm -rf ${JOB_NAME.toLowerCase()}'
+                sh 'docker logout'
+                def workspaceDir = "${JENKINS_HOME}/workspace/${JOB_NAME}/${BUILD_NUMBER}"
+                sh "rm -rf ${workspaceDir}"
             }
         }
     }
+
 
 
 
