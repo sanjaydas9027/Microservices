@@ -1,11 +1,5 @@
-# # FROM maven:3.8.2-jdk-8-slim AS build
-# # WORKDIR /home/app
-# # COPY . /home/app
-# # RUN mvn -f /home/app/pom.xml clean package
-
-# FROM openjdk:8-jdk-alpine
-# WORKDIR /home/app
-# VOLUME /tmp
-# EXPOSE 8000
-# COPY  /home/app/target/*.jar app.jar
-# ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app.jar" ]
+FROM openjdk:8-jdk-alpine
+ARG artifact=target/currency-exchange.jar
+WORKDIR /app
+COPY ${artifact} app.jar
+ENTRYPOINT ["java","-jar","app.jar"]
