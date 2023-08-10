@@ -1,7 +1,10 @@
 pipeline {
-    // environment {
-        
-    // }
+     environment {
+        registry = "sanjaydas9027/currency-exchange"
+        registryCredential = 'DOCKER_CRED'
+        DOCKER_IMAGE = "${registry}:${BUILD_NUMBER}"
+        SONAR_URL = "http://3.111.171.106:9000/"
+    }
     
     agent {
         docker {
@@ -11,13 +14,24 @@ pipeline {
     }
 
     stages {
-        stage('Stage1') {
+        stage('Build') {
             steps {
                 // List files in the workspace
                 sh 'ls -ltr'
 
                 // Replace this with your actual Maven build steps
                 sh 'cd CurrencyExchange && mvn clean package'
+            }
+        }
+        stage('Build and Push Docker Image') {
+            steps {
+                script {
+                    sh 'cd CurrencyExchange && ls -ltr && docker build -t ${DOCKER_IMAGE} .'
+                    def dockerImage = docker.image("${DOCKER_IMAGE}")
+                    docker.withRegistry('', registryCredential) {
+                        dockerImage.push()
+                    }
+                }
             }
         }
         
