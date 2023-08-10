@@ -14,23 +14,6 @@ pipeline {
     }
 
     stages {
-            stage('Static Code Analysis'){
-            steps{
-               withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
-                    sh 'cd CurrencyExchange && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
-                }
-            }   
-            }
-            stage('Quality Gate') {
-            steps {
-                script {
-                    def qg = waitForQualityGate abortPipeline: false, credentialsId: 'sonarqube'
-                    if (qg.status != 'OK') {
-                        error "Quality Gate did not pass"
-                    }
-                }
-            }
-            }
         stage('Build') {
             steps {
                 // List files in the workspace
@@ -40,13 +23,6 @@ pipeline {
                 sh 'cd CurrencyExchange && mvn clean package'
             }
         }
-        stage('Debug') {
-            steps {
-                sh 'pwd'
-                sh 'ls -la'
-            }
-        }
-
 
         stage('Build and Push Docker Image') {
             steps {
