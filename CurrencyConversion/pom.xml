@@ -4,18 +4,18 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.in28minutes.microservices</groupId>
-	<artifactId>01-currency-exchange-basic</artifactId>
+	<groupId>currency.microservices</groupId>
+	<artifactId>currency-conversion</artifactId>
 	<version>0.0.4-SNAPSHOT</version> <!-- CHANGE -->
 	<packaging>jar</packaging>
-	<name>currency-exchange</name>
+	<name>currency-conversion</name>
 
 	<description>Demo project for Spring Boot</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.1.1.RELEASE</version>
+		<version>2.1.7.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
@@ -35,6 +35,11 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-openfeign</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
@@ -44,16 +49,20 @@
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
-		<dependency> <!-- CHANGE -->
+		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-sleuth</artifactId>
 		</dependency>
 
+		<!-- <dependency> <groupId>org.springframework.cloud</groupId> <artifactId>spring-cloud-starter-netflix-ribbon</artifactId> 
+			</dependency> <dependency> <groupId>org.springframework.cloud</groupId> <artifactId>spring-cloud-starter-kubernetes-all</artifactId> 
+			</dependency> <dependency> <groupId>org.springframework.cloud</groupId> <artifactId>spring-cloud-gcp-starter-logging</artifactId> 
+			</dependency> -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
@@ -106,7 +115,7 @@
 	</dependencyManagement>
 
 	<build>
-		<finalName>currency-exchange</finalName>
+		<finalName>currency-conversion</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
